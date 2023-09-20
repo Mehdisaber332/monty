@@ -1,146 +1,44 @@
 #include "monty.h"
+
 /**
- * monty_mod - A function that prints monty  mod
- * @stack: List Argument
- * @line_number: Number Argument
+ * mul_nodes - Adds the top two elements of the stack.
+ * @stack: Pointer to a pointer pointing to top node of the stack.
+ * @line_number: Interger representing the line number of of the opcode.
  */
-void monty_mod(stack_t **stack, unsigned int line_number)
+void mul_nodes(stack_t **stack, unsigned int line_number)
 {
-	stack_t *node1, *node2;
+	int sum;
 
-	node1 = (*stack);
-	if ((*stack) == NULL || (*stack)->next == NULL)
-	{
-		mod_error(stack, line_number);
-	}
-	if (node1->n == 0)
-	{
-		fprintf(stderr, "L%d: division by zero\n", line_number);
-		free_list(stack);
-		exit(EXIT_FAILURE);
-	}
+	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
+		more_err(8, line_number, "mul");
 
-	node2 = node1->next;
-	node2->n %= node1->n;
-	(*stack) = node2;
-	free(node1);
+	(*stack) = (*stack)->next;
+	sum = (*stack)->n * (*stack)->prev->n;
+	(*stack)->n = sum;
+	free((*stack)->prev);
+	(*stack)->prev = NULL;
 }
 
-/**
- * monty_pchar - A function that prints character in monty
- * @stack: List Argument
- * @line_number: Number Argument
- *
- * Return: EXIT_FAILURE
- */
-void monty_pchar(stack_t **stack, unsigned int line_number)
-{
-	stack_t *node1;
-
-	if ((*stack) == NULL)
-	{
-		pchar_error(stack, line_number);
-	}
-	node1 = (*stack);
-	if (node1->n > 127 || node1->n < 0)
-	{
-		fprintf(stderr, "L%d: can't pchar, value out of range\n", line_number);
-		free_list(stack);
-		exit(EXIT_FAILURE);
-	}
-
-	printf("%c\n", node1->n);
-}
-/**
- * monty_pstr - A function for monty pstr
- * @stack: List Argument
- * @line_number: Number Argument
- *
- * Return: EXIT_FAILURE
- */
-void monty_pstr(stack_t **stack, unsigned int line_number)
-{
-	stack_t *temp;
-
-	temp = *stack;
-
-	while (temp)
-	{
-		if (temp->n > 127 || temp->n <= 0)
-		{
-			break;
-		}
-		printf("%c", temp->n);
-		temp = temp->next;
-	}
-	printf("\n");
-	(void)line_number;
-}
 
 /**
- * monty_rotl - A function for stack rotl
- * @stack: List Argument
- * @line_number: Number Argument
+ * mod_nodes - Adds the top two elements of the stack.
+ * @stack: Pointer to a pointer pointing to top node of the stack.
+ * @line_number: Interger representing the line number of of the opcode.
  */
-void monty_rotl(stack_t **stack, unsigned int line_number)
+void mod_nodes(stack_t **stack, unsigned int line_number)
 {
-	stack_t *temp, *top;
+	int sum;
 
-	if (*stack == NULL || (*stack)->next == NULL)
-		return;
+	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
 
-	top = (*stack)->next;
-	top->prev = NULL;
+		more_err(8, line_number, "mod");
 
-	temp = *stack;
-	while (temp->next != NULL)
-	{
-		temp = temp->next;
-	}
 
-	temp->next = *stack;
-	(*stack)->next = NULL;
-	(*stack)->prev = temp;
-	(*stack) = top;
-	(void)line_number;
-}
-
-/**
- * monty_rotr - A function for stack rotation_right
- * @stack: List Argument
- * @line_number: Number Argument
- *
- */
-
-void monty_rotr(stack_t **stack, unsigned int line_number)
-{
-	stack_t *temp, *top, *bottom;
-	int count;
-
-	if (*stack == NULL || (*stack)->next == NULL)
-		return;
-
-	top = (*stack);
-
-	temp = *stack;
-	count = 0;
-	while (temp->next != NULL)
-	{
-		temp = temp->next;
-		count++;
-	}
-
-	temp->prev = NULL;
-	temp->next = top;
-	(*stack) = temp;
-
-	bottom = temp;
-	while (count > 0)
-	{
-		bottom = bottom->next;
-		count--;
-	}
-	bottom->next = NULL;
-
-	(void)line_number;
+	if ((*stack)->n == 0)
+		more_err(9, line_number);
+	(*stack) = (*stack)->next;
+	sum = (*stack)->n % (*stack)->prev->n;
+	(*stack)->n = sum;
+	free((*stack)->prev);
+	(*stack)->prev = NULL;
 }
